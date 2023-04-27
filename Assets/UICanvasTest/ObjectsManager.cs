@@ -166,8 +166,8 @@ public class ObjectsManager : MonoBehaviour
             for (int i = 0; i < CharacterParent.childCount; i++)
             {
                 var target = CharacterParent.GetChild(i);
-                _worldTags[i].position = target.position + Vector3.up;
-                _worldTags[i].LookAt(mainCamera);
+                var position = target.position + Vector3.up;
+                _worldTags[i].SetPositionAndRotation(position, Quaternion.LookRotation(position - mainCamera.position));
             }
         }
         if (_useWorldTag && !_lookAtCamera)
@@ -192,8 +192,8 @@ public class ObjectsManager : MonoBehaviour
             for (int i = 0; i < CharacterParent.childCount; i++)
             {
                 var target = CharacterParent.GetChild(i);
-                _spriteTags[i].position = target.position + Vector3.up;
-                _spriteTags[i].LookAt(mainCamera);
+                var position = target.position + Vector3.up;
+                _spriteTags[i].SetPositionAndRotation(position, Quaternion.LookRotation(position - mainCamera.position));
             }
         }
          if (_useSpriteTag && !_lookAtCamera)
