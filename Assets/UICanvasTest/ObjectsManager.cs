@@ -157,6 +157,7 @@ public class ObjectsManager : MonoBehaviour
         }
     }
 
+    Vector3 dummy;
     private void Update()
     {
         DisplayFPS();
@@ -193,6 +194,8 @@ public class ObjectsManager : MonoBehaviour
             {
                 var target = CharacterParent.GetChild(i);
                 var position = target.position + Vector3.up;
+                var screenValue = Camera.main.WorldToScreenPoint(target.position + Vector3.up);
+                dummy += screenValue;
                 _spriteTags[i].SetPositionAndRotation(position, Quaternion.LookRotation(position - mainCamera.position));
             }
         }
@@ -204,6 +207,7 @@ public class ObjectsManager : MonoBehaviour
                 _spriteTags[i].position = target.position + Vector3.up;
             }
         }
+        Debug.Log(dummy);
     }
 
     private void DisplayFPS()
