@@ -66,10 +66,16 @@ public class ObjectsManager : MonoBehaviour
             count++;
         }
 
-        EmptyOut(ref _worldTags);
-        EmptyOut(ref _overlayTags);
+        EmptyOutAll();
         _useWorldTag = false;
         _useOverlayTag = false;
+        _useSpriteTag = false;
+    }
+    private void EmptyOutAll()
+    {
+        EmptyOut(ref _worldTags);
+        EmptyOut(ref _overlayTags);
+        EmptyOut(ref _spriteTags);
     }
     public void Set10000Character()
     {
@@ -83,9 +89,7 @@ public class ObjectsManager : MonoBehaviour
     }
     public void SetWorldTag(bool lookAtCamera)
     {
-        EmptyOut(ref _overlayTags);
-        EmptyOut(ref _worldTags);
-        EmptyOut(ref _spriteTags);
+        EmptyOutAll();
 
         _worldTags = new List<Transform>();
         for (int i = 0; i < CharacterParent.childCount; i++)
@@ -102,9 +106,7 @@ public class ObjectsManager : MonoBehaviour
     }
     public void SetOverlayTag()
     {
-        EmptyOut(ref _worldTags);
-        EmptyOut(ref _overlayTags);
-        EmptyOut(ref _spriteTags);
+        EmptyOutAll();
 
         _overlayTags = new List<RectTransform>();
         for (int i = 0; i < CharacterParent.childCount; i++)
@@ -123,9 +125,7 @@ public class ObjectsManager : MonoBehaviour
     }
     public void SetSpriteTag(bool lookAtCamera)
     {
-        EmptyOut(ref _worldTags);
-        EmptyOut(ref _overlayTags);
-        EmptyOut(ref _spriteTags);
+        EmptyOutAll();
 
         _spriteTags = new List<Transform>();
         for (int i = 0; i < CharacterParent.childCount; i++)
@@ -149,15 +149,16 @@ public class ObjectsManager : MonoBehaviour
     {
         if (target != null)
         {
-            foreach (var tag in target)
+            while (0 < target.Count)
             {
-                Destroy(tag.gameObject);
+                Destroy(target[0].gameObject);
+                target.RemoveAt(0);
             }
             target.Clear();
         }
     }
 
-    Vector3 dummy;
+    private Vector3 _height = new Vector3(0, 0.1f, 0);
     private void Update()
     {
         DisplayFPS();
@@ -167,7 +168,7 @@ public class ObjectsManager : MonoBehaviour
             for (int i = 0; i < CharacterParent.childCount; i++)
             {
                 var target = CharacterParent.GetChild(i);
-                var position = target.position + Vector3.up;
+                var position = target.position + _height;
                 _worldTags[i].SetPositionAndRotation(position, Quaternion.LookRotation(position - mainCamera.position));
             }
         }
@@ -176,7 +177,7 @@ public class ObjectsManager : MonoBehaviour
             for (int i = 0; i < CharacterParent.childCount; i++)
             {
                 var target = CharacterParent.GetChild(i);
-                _worldTags[i].position = target.position + Vector3.up;
+                _worldTags[i].position = target.position + _height;
             }
         }
         if (_useOverlayTag)
@@ -184,7 +185,7 @@ public class ObjectsManager : MonoBehaviour
             for (int i = 0; i < CharacterParent.childCount; i++)
             {
                 var target = CharacterParent.GetChild(i);
-                var screenValue = Camera.main.WorldToScreenPoint(target.position + Vector3.up);
+                var screenValue = Camera.main.WorldToScreenPoint(target.position + _height);
                 _overlayTags[i].position = screenValue;
             }
         }
@@ -193,21 +194,18 @@ public class ObjectsManager : MonoBehaviour
             for (int i = 0; i < CharacterParent.childCount; i++)
             {
                 var target = CharacterParent.GetChild(i);
-                var position = target.position + Vector3.up;
-                var screenValue = Camera.main.WorldToScreenPoint(target.position + Vector3.up);
-                dummy += screenValue;
+                var position = target.position + _height;
                 _spriteTags[i].SetPositionAndRotation(position, Quaternion.LookRotation(position - mainCamera.position));
             }
         }
-         if (_useSpriteTag && !_lookAtCamera)
+        if (_useSpriteTag && !_lookAtCamera)
         {
             for (int i = 0; i < CharacterParent.childCount; i++)
             {
                 var target = CharacterParent.GetChild(i);
-                _spriteTags[i].position = target.position + Vector3.up;
+                _spriteTags[i].position = target.position + _height;
             }
         }
-        Debug.Log(dummy);
     }
 
     private void DisplayFPS()
